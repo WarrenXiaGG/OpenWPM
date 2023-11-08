@@ -4,12 +4,15 @@ from typing import Literal
 
 import tranco
 
-from custom_command import LinkCountingCommand
+from custom_command import LinkCountingCommand, SignupCommand
 from openwpm.command_sequence import CommandSequence
 from openwpm.commands.browser_commands import GetCommand
 from openwpm.config import BrowserParams, ManagerParams
 from openwpm.storage.sql_provider import SQLiteStorageProvider
 from openwpm.task_manager import TaskManager
+
+def emailProducer(url, site_title):
+    return "test@email.com"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--tranco", action="store_true", default=False)
@@ -22,6 +25,8 @@ sites = [
     "http://www.princeton.edu",
     "http://citp.princeton.edu/",
 ]
+sites = ["http://localhost:8000/dummysite.html"]
+
 if args.tranco:
     # Load the latest tranco list. See https://tranco-list.eu/
     print("Loading tranco top sites list...")
@@ -94,6 +99,7 @@ with TaskManager(
         command_sequence.append_command(GetCommand(url=site, sleep=3), timeout=60)
         # Have a look at custom_command.py to see how to implement your own command
         command_sequence.append_command(LinkCountingCommand())
+        command_sequence.append_command(SignupCommand(emailProducer,2,180,debug = True));
 
         # Run commands across all browsers (simple parallelization)
         manager.execute_command_sequence(command_sequence)
