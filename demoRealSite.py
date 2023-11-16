@@ -1,4 +1,6 @@
 import argparse
+import random
+import time
 from pathlib import Path
 from typing import Literal
 
@@ -89,6 +91,9 @@ with TaskManager(
                 f"CommandSequence for {val} ran {'successfully' if success else 'unsuccessfully'}"
             )
 
+        # generate a new random seed for each site
+        seed = time.time()
+
         for email in EMAILS:
             # Parallelize sites over all number of browsers set above.
             command_sequence = CommandSequence(
@@ -105,4 +110,5 @@ with TaskManager(
             command_sequence.append_command(SignupCommand(emailProducerProducer(email),2,180,debug = True));
 
             # Run commands across all browsers (simple parallelization)
+            random.seed(seed)
             manager.execute_command_sequence(command_sequence)
