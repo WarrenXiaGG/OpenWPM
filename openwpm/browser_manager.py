@@ -484,9 +484,10 @@ class BrowserManagerHandle:
                     task_manager.failure_count = 0
 
             if self.restart_required:
-                task_manager.sock.finalize_visit_id(
-                    success=False, visit_id=self.curr_visit_id
-                )
+                self.logger.critical(f"Restart failed for visit id {self.curr_visit_id}")
+                # task_manager.sock.finalize_visit_id(
+                #     success=False, visit_id=self.curr_visit_id
+                # )
                 break
 
         self.logger.info(

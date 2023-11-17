@@ -13,11 +13,11 @@ from openwpm.config import BrowserParams, ManagerParams
 from openwpm.storage.sql_provider import SQLiteStorageProvider
 from openwpm.task_manager import TaskManager
 
-EMAILS = (
-            "pabovo2011@bikedid.com",
-            "sifedali@afia.pro",
-            "lakkakukni@gufum.com"
-        )
+EMAILS = [
+            "veerliudmila@gmail.com",
+            "1xkds8b6n@mozmail.com",
+            "ohmyducks@duck.com"
+]
 
 def emailProducerProducer(email):
     return lambda url, site_title: email
@@ -29,7 +29,7 @@ parser.add_argument("--headless", action="store_true", default=False),
 args = parser.parse_args()
 
 sites = iter([
-    "https://hackernewsletter.com/"
+    "https://www.nothingunknown.com/looking-for-more"
 ])
 
 
@@ -52,20 +52,20 @@ browser_params = [BrowserParams(display_mode=display_mode) for _ in range(NUM_BR
 # Update browser configuration (use this for per-browser settings)
 for browser_param in browser_params:
     # Record HTTP Requests and Responses
-    browser_param.http_instrument = True
+    browser_param.http_instrument = False
     # Record cookie changes
-    browser_param.cookie_instrument = True
+    browser_param.cookie_instrument = False
     # Record Navigations
-    browser_param.navigation_instrument = True
+    browser_param.navigation_instrument = False
     # Record JS Web API calls
-    browser_param.js_instrument = True
+    browser_param.js_instrument = False
     # Record the callstack of all WebRequests made
     # browser_param.callstack_instrument = True
     # Record DNS resolution
-    browser_param.dns_instrument = True
+    browser_param.dns_instrument = False
     # Set this value as appropriate for the size of your temp directory
     # if you are running out of space
-    browser_param.maximum_profile_size = 50 * (10**20)  # 50 MB = 50 * 2^20 Bytes
+    browser_param.maximum_profile_size = 1000 * (10**20)  # 1 GB = 1000 * 2^20 Bytes
 
 # Update TaskManager configuration (use this for crawl-wide settings)
 manager_params.data_directory = Path("./datadir/")
@@ -107,7 +107,7 @@ with TaskManager(
             command_sequence.append_command(GetCommand(url=site, sleep=3), timeout=60)
             # Have a look at custom_command.py to see how to implement your own command
             command_sequence.append_command(LinkCountingCommand())
-            command_sequence.append_command(SignupCommand(emailProducerProducer(email),2,180,debug = True));
+            command_sequence.append_command(SignupCommand(emailProducerProducer(email),2,180,debug = True))
 
             # Run commands across all browsers (simple parallelization)
             random.seed(seed)
