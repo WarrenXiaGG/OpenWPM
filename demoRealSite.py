@@ -13,14 +13,12 @@ from openwpm.config import BrowserParams, ManagerParams
 from openwpm.storage.sql_provider import SQLiteStorageProvider
 from openwpm.task_manager import TaskManager
 
-EMAILS = [
-            "veerliudmila@gmail.com",
-            "h53w66ht9@mozmail.com",
-            "ohmyducks@duck.com"
-]
+EMAILS = ["veerliudmila@gmail.com", "h53w66ht9@mozmail.com", "ohmyducks@duck.com"]
+
 
 def emailProducerProducer(email):
     return lambda url, site_title: email
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--crux", action="store", default=None)
@@ -29,15 +27,18 @@ parser.add_argument("--ignore-until", action="store", default=None)
 
 args = parser.parse_args()
 
-sites = iter([
-    "https://www.nothingunknown.com/looking-for-more"
-])
+sites = iter(["https://www.nothingunknown.com/looking-for-more"])
 
 
 if args.crux is not None:
     # Load the latest crux list.
     print("Loading Crux List")
-    sites = CrUXData("202310.csv.gz", rank_filter=1000, partition=args.crux, ignoreUntil=args.ignore_until)
+    sites = CrUXData(
+        "202310.csv.gz",
+        rank_filter=1000,
+        partition=args.crux,
+        ignoreUntil=args.ignore_until,
+    )
 
 
 display_mode: Literal["native", "headless", "xvfb"] = "native"
@@ -88,6 +89,7 @@ with TaskManager(
 ) as manager:
     # Visits the sites
     for index, site in enumerate(sites):
+
         def callback(success: bool, val: str = site) -> None:
             print(
                 f"CommandSequence for {val} ran {'successfully' if success else 'unsuccessfully'}"
@@ -99,17 +101,16 @@ with TaskManager(
         for email in EMAILS:
             # Parallelize sites over all number of browsers set above.
             command_sequence = CommandSequence(
-                site,
-                site_rank=index,
-                callback=callback,
-                reset=True
+                site, site_rank=index, callback=callback, reset=True
             )
 
             # Start by visiting the page
             command_sequence.append_command(GetCommand(url=site, sleep=3), timeout=60)
             # Have a look at custom_command.py to see how to implement your own command
             command_sequence.append_command(LinkCountingCommand())
-            command_sequence.append_command(SignupCommand(emailProducerProducer(email),2,180,debug = True))
+            command_sequence.append_command(
+                SignupCommand(emailProducerProducer(email), 2, 180, debug=True)
+            )
 
             # Run commands across all browsers (simple parallelization)
             random.seed(seed)
