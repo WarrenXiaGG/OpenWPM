@@ -15,7 +15,7 @@ from openwpm.task_manager import TaskManager
 
 EMAILS = [
             "veerliudmila@gmail.com",
-            "1xkds8b6n@mozmail.com",
+            "h53w66ht9@mozmail.com",
             "ohmyducks@duck.com"
 ]
 
@@ -23,7 +23,7 @@ def emailProducerProducer(email):
     return lambda url, site_title: email
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--crux", action="store_true", default=False)
+parser.add_argument("--crux", action="store", default=None)
 parser.add_argument("--headless", action="store_true", default=False),
 
 args = parser.parse_args()
@@ -33,10 +33,10 @@ sites = iter([
 ])
 
 
-if args.crux:
+if args.crux is not None:
     # Load the latest crux list.
     print("Loading Crux List")
-    sites = CrUXData("202310.csv.gz", rank_filter=1000)
+    sites = CrUXData("202310.csv.gz", rank_filter=1000, partition=args.crux)
 
 
 display_mode: Literal["native", "headless", "xvfb"] = "native"
@@ -66,6 +66,7 @@ for browser_param in browser_params:
     # Set this value as appropriate for the size of your temp directory
     # if you are running out of space
     browser_param.maximum_profile_size = 1000 * (10**20)  # 1 GB = 1000 * 2^20 Bytes
+    browser_param.tmp_profile_dir = Path("/mnt/cs356email/tmp-03")
 
 # Update TaskManager configuration (use this for crawl-wide settings)
 manager_params.data_directory = Path("./datadir/")
