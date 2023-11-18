@@ -9,6 +9,7 @@ class CrUXData:
         file_path: str,
         rank_filter: Optional[int] = None,
         partition: Optional[int] = None,
+        ignoreUntil: Optional[str] = None,
     ):
         """
         Initialize the iterator with the path to the gzip file and an optional rank filter.
@@ -16,10 +17,12 @@ class CrUXData:
         :param file_path: Path to the gzip file containing the CrUX data.
         :param rank_filter: Optional rank to filter the data. Can be 1000, 10000, 100000, 1000000.
         :param partition: Optional partition to filter the data. Can be 0 or 1.
+        :param ignoreUntil: Optional site to ignore until. Useful for resuming a crawl.
         """
         self.file_path = file_path
         self.rank_filter = rank_filter
         self.partition = int(partition)
+        self.ignoreUntil = ignoreUntil
 
         if self.partition is not None and self.partition not in [0, 1]:
             raise ValueError("Partition must be 0 or 1")
@@ -33,6 +36,13 @@ class CrUXData:
         with gzip.open(self.file_path, "rt", newline="", encoding="utf-8") as file:
             reader = csv.DictReader(file)
             line = 0
+
+            if self.ignoreUntil is not None:
+                for row in reader:
+                    line += 1
+                    if row["origin"] == self.ignoreUntil:
+                        break
+
             for row in reader:
                 if self.rank_filter is not None and int(row["rank"]) > self.rank_filter:
                     break

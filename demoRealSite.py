@@ -24,7 +24,8 @@ def emailProducerProducer(email):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--crux", action="store", default=None)
-parser.add_argument("--headless", action="store_true", default=False),
+parser.add_argument("--headless", action="store_true", default=False)
+parser.add_argument("--ignore-until", action="store", default=None)
 
 args = parser.parse_args()
 
@@ -36,7 +37,7 @@ sites = iter([
 if args.crux is not None:
     # Load the latest crux list.
     print("Loading Crux List")
-    sites = CrUXData("202310.csv.gz", rank_filter=1000, partition=args.crux)
+    sites = CrUXData("202310.csv.gz", rank_filter=1000, partition=args.crux, ignoreUntil=args.ignore_until)
 
 
 display_mode: Literal["native", "headless", "xvfb"] = "native"
